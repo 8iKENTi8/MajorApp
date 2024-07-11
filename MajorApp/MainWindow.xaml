@@ -1,0 +1,42 @@
+﻿<Window x:Class="MajorApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MajorApp"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="ГрузМенеджер" Height="550" Width="700">
+    <Grid Background="#ffdadada">
+        <Border MinWidth="400" Margin="15" Background="white" 
+                VerticalAlignment="Center" Padding="30" MaxWidth="550" CornerRadius="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"></DropShadowEffect>
+            </Border.Effect>
+            <StackPanel>
+                <TextBlock Text="ГрузМенеджер" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"/>
+                <TextBlock x:Name="exampleT" FontWeight="Bold" Margin="0 0 0 20"/>
+                <Grid Margin="0 0 0 20">
+                    <Button HorizontalAlignment="Left" Content="Просмотр заявок"/>
+                </Grid>
+
+                <!-- Дата создания -->
+                <DatePicker x:Name="datePickerCreatedDate" materialDesign:HintAssist.Hint="Дата создания" Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
+
+                <!-- Описание груза -->
+                <TextBox x:Name="textBoxDescription" materialDesign:HintAssist.Hint="Описание груза" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                <!-- Адрес получения -->
+                <TextBox x:Name="textBoxPickupAddress" materialDesign:HintAssist.Hint="Адрес получения" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                <!-- Адрес доставки -->
+                <TextBox x:Name="textBoxDeliveryAddress" materialDesign:HintAssist.Hint="Адрес доставки" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                <!-- Комментарий -->
+                <TextBox x:Name="textBoxComment" materialDesign:HintAssist.Hint="Комментарий" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                <!-- Кнопка для создания заявки -->
+                <Button Content="Создать заявку" Margin="0 20" Click="CreateOrder"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
