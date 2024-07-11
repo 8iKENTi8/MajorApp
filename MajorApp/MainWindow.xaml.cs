@@ -1,33 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MajorApp
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly HttpClient client = new HttpClient();
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void CreateOrder(object sender, RoutedEventArgs e)
+        private async void CreateOrder(object sender, RoutedEventArgs e)
         {
+            var order = new Order
+            {
+                Description = textBoxDescription.Text,
+                PickupAddress = textBoxPickupAddress.Text,
+                DeliveryAddress = textBoxDeliveryAddress.Text,
+                Comment = textBoxComment.Text,
+                CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),  // Обработать возможность null
+                UpdatedDate = DateTime.Now
+            };
 
+            var json = JsonSerializer.Serialize(order);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            try
+            {
+                var response = await client.PostAsync("https://localhost:5001/api/orders", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Order created successfully.");
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to create order. Status Code: {response.StatusCode}");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show($"Request error: {ex.Message}");
+            }
         }
+
+    }
+
+    public class Order
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public string PickupAddress { get; set; }
+        public string DeliveryAddress { get; set; }
+        public string Comment { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }
