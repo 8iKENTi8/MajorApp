@@ -1,7 +1,9 @@
 ﻿using MajorApp.Models;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MajorApp
 {
@@ -23,7 +25,6 @@ namespace MajorApp
         private void LoadOrderDetails()
         {
             // Заполнение полей данными из выбранного заказа
-            datePickerCreatedDate.SelectedDate = _order.CreatedDate;
             textBoxDescription.Text = _order.Description;
             textBoxPickupAddress.Text = _order.PickupAddress;
             textBoxDeliveryAddress.Text = _order.DeliveryAddress;
@@ -33,11 +34,15 @@ namespace MajorApp
             textBoxHeight.Text = _order.Height.ToString();
             textBoxDepth.Text = _order.Depth.ToString();
             textBoxWeight.Text = _order.Weight.ToString();
+
+            // Установка текущего статуса заявки
+            comboBoxStatus.SelectedItem = comboBoxStatus.Items
+                .Cast<ComboBoxItem>()
+                .FirstOrDefault(item => item.Content.ToString() == _order.Status);
         }
         private async void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
             // Обновление данных заказа с помощью API
-            _order.CreatedDate = datePickerCreatedDate.SelectedDate ?? _order.CreatedDate;
             _order.Description = textBoxDescription.Text;
             _order.PickupAddress = textBoxPickupAddress.Text;
             _order.DeliveryAddress = textBoxDeliveryAddress.Text;
@@ -47,6 +52,12 @@ namespace MajorApp
             _order.Height = double.TryParse(textBoxHeight.Text, out var height) ? height : _order.Height;
             _order.Depth = double.TryParse(textBoxDepth.Text, out var depth) ? depth : _order.Depth;
             _order.Weight = double.TryParse(textBoxWeight.Text, out var weight) ? weight : _order.Weight;
+
+            // Обновление статуса заявки
+            if (comboBoxStatus.SelectedItem is ComboBoxItem selectedStatus)
+            {
+                _order.Status = selectedStatus.Content.ToString();
+            }
 
             try
             {

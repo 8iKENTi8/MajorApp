@@ -15,8 +15,13 @@
             <StackPanel>
                 <TextBlock Text="Редактирование заявки" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"/>
 
-                <!-- Дата создания -->
-                <DatePicker x:Name="datePickerCreatedDate" materialDesign:HintAssist.Hint="Дата создания" Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
+                <!-- Статус -->
+                <ComboBox x:Name="comboBoxStatus" materialDesign:HintAssist.Hint="Статус заявки" Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                    <ComboBoxItem Content="Новая" />
+                    <ComboBoxItem Content="Передано на выполнение" />
+                    <ComboBoxItem Content="Выполнено" />
+                    <ComboBoxItem Content="Отменена" />
+                </ComboBox>
 
                 <!-- Описание груза -->
                 <TextBox x:Name="textBoxDescription" materialDesign:HintAssist.Hint="Описание груза" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
