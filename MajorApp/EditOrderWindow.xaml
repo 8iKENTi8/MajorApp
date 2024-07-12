@@ -16,7 +16,7 @@
                 <TextBlock Text="Редактирование заявки" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"/>
 
                 <!-- Статус -->
-                <ComboBox x:Name="comboBoxStatus" materialDesign:HintAssist.Hint="Статус заявки" Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                <ComboBox x:Name="comboBoxStatus" materialDesign:HintAssist.Hint="Статус заявки" Style="{StaticResource MaterialDesignFloatingHintComboBox}" SelectionChanged="ComboBoxStatus_SelectionChanged">
                     <ComboBoxItem Content="Новая" />
                     <ComboBoxItem Content="Передано на выполнение" />
                     <ComboBoxItem Content="Выполнено" />

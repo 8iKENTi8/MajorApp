@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MajorApp
 {
@@ -39,6 +40,39 @@ namespace MajorApp
             comboBoxStatus.SelectedItem = comboBoxStatus.Items
                 .Cast<ComboBoxItem>()
                 .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+
+            // Установка состояния полей
+            SetFieldsState();
+        }
+
+        private void SetFieldsState()
+        {
+            bool isEditable = _order.Status == "Новая";
+
+            textBoxDescription.IsEnabled = isEditable;
+            textBoxPickupAddress.IsEnabled = isEditable;
+            textBoxDeliveryAddress.IsEnabled = isEditable;
+            textBoxExecutor.IsEnabled = isEditable;
+            textBoxWidth.IsEnabled = isEditable;
+            textBoxHeight.IsEnabled = isEditable;
+            textBoxDepth.IsEnabled = isEditable;
+            textBoxWeight.IsEnabled = isEditable;
+
+            var readOnlyColor = new SolidColorBrush(Color.FromRgb(211, 211, 211)); // Light Gray
+            var editableColor = new SolidColorBrush(Colors.White);
+
+            textBoxDescription.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxPickupAddress.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxDeliveryAddress.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxExecutor.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxWidth.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxHeight.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxDepth.Background = isEditable ? editableColor : readOnlyColor;
+            textBoxWeight.Background = isEditable ? editableColor : readOnlyColor;
+
+            // Поле комментарий всегда редактируемо
+            textBoxComment.IsEnabled = true;
+            textBoxComment.Background = editableColor;
         }
         private async void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
@@ -80,5 +114,19 @@ namespace MajorApp
                 MessageBox.Show($"Request error: {ex.Message}");
             }
         }
+
+        private void ComboBoxStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Не позволяем менять статус обратно на "Новая", если он уже изменен
+            if (_order.Status != "Новая" && ((ComboBoxItem)comboBoxStatus.SelectedItem).Content.ToString() == "Новая")
+            {
+                comboBoxStatus.SelectedItem = comboBoxStatus.Items
+                    .Cast<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+                MessageBox.Show("Статус заявки нельзя вернуть на 'Новая'");
+            }
+        }
+
+
     }
 }
