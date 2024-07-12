@@ -1,4 +1,5 @@
-﻿using MajorApp.Models;
+﻿using MajorApp.Logging;
+using MajorApp.Models;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -15,11 +16,14 @@ namespace MajorApp
     {
         private static readonly HttpClient client = new HttpClient();
         private Order _order;
+        private readonly StatusChangeLogger _statusChangeLogger;
 
         public EditOrderWindow(Order order)
         {
             InitializeComponent();
             _order = order;
+            _statusChangeLogger = new StatusChangeLogger("status_change.log");
+            _order.AttachLogger(_statusChangeLogger);
             LoadOrderDetails();
         }
 
