@@ -17,7 +17,7 @@
                 <TextBlock Text="ГрузМенеджер" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"/>
                 <TextBlock x:Name="exampleT" FontWeight="Bold" Margin="0 0 0 20"/>
                 <Grid Margin="0 0 0 20">
-                    <Button HorizontalAlignment="Left" Content="Просмотр заявок"/>
+                    <Button HorizontalAlignment="Left" Content="Просмотр заявок" Click="OpenOrdersWindow"/>
                 </Grid>
 
                 <!-- Дата создания -->
