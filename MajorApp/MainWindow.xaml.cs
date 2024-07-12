@@ -24,8 +24,13 @@ namespace MajorApp
                 PickupAddress = textBoxPickupAddress.Text,
                 DeliveryAddress = textBoxDeliveryAddress.Text,
                 Comment = textBoxComment.Text,
-                CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),  // Обработать возможность null
-                UpdatedDate = DateTime.Now
+                CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),
+                UpdatedDate = DateTime.Now,
+                Executor = textBoxExecutor.Text,
+                Width = double.Parse(textBoxWidth.Text),
+                Height = double.Parse(textBoxHeight.Text),
+                Depth = double.Parse(textBoxDepth.Text),
+                Weight = double.Parse(textBoxWeight.Text)
             };
 
             var json = JsonSerializer.Serialize(order);
@@ -49,7 +54,6 @@ namespace MajorApp
                 MessageBox.Show($"Request error: {ex.Message}");
             }
         }
-
     }
 
     public class Order
@@ -61,5 +65,10 @@ namespace MajorApp
         public string Comment { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public string Executor { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double Depth { get; set; }
+        public double Weight { get; set; }
     }
 }
