@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ namespace MajorApp
     public partial class OrdersWindow : Window
     {
         private static readonly HttpClient client = new HttpClient();
+        private List<Order> _orders;  // Храним исходный список заказов
 
         public OrdersWindow()
         {
@@ -29,8 +32,8 @@ namespace MajorApp
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var orders = JsonSerializer.Deserialize<List<Order>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    dataGridOrders.ItemsSource = orders;
+                    _orders = JsonSerializer.Deserialize<List<Order>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    dataGridOrders.ItemsSource = _orders;  // Устанавливаем список заказов в DataGrid
                 }
                 else
                 {
@@ -84,5 +87,35 @@ namespace MajorApp
                 }
             }
         }
+
+        // Метод для поиска заявок по введенному тексту
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchText = searchTextBox.Text.ToLowerInvariant();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                dataGridOrders.ItemsSource = _orders;  // Если поле поиска пустое, загружаем все заявки
+                return;
+            }
+
+            var filteredOrders = _orders.Where(o =>
+                (o.Status?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.Description?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.PickupAddress?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.DeliveryAddress?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.Executor?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.Comment?.ToLowerInvariant().Contains(searchText) == true) ||
+                (o.CreatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
+                (o.UpdatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
+                (o.Width.ToString().ToLowerInvariant().Contains(searchText)) ||
+                (o.Height.ToString().ToLowerInvariant().Contains(searchText)) ||
+                (o.Depth.ToString().ToLowerInvariant().Contains(searchText)) ||
+                (o.Weight.ToString().ToLowerInvariant().Contains(searchText))
+            ).ToList();
+
+            dataGridOrders.ItemsSource = new ObservableCollection<Order>(filteredOrders);  // Преобразуем отфильтрованные заказы в ObservableCollection
+        }
+
     }
 }

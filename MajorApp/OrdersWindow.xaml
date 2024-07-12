@@ -19,6 +19,7 @@
                 <!-- Кнопка для создания новой заявки -->
                 <Grid Margin="0 0 0 20">
                     <Button HorizontalAlignment="Left" Content="Создать новую заявку" Click="CreateNewOrder"/>
+                    <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="Поиск" HorizontalAlignment="Right" Width="200" VerticalContentAlignment="Center" Margin="0 0 20 0" FontSize="16" TextChanged="SearchTextBox_TextChanged"/>
                 </Grid>
 
                 <!-- DataGrid для отображения заявок -->
