@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:MajorApp"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Список заявок" Height="690" Width="1670">
+        Title="Список заявок" Height="690" Width="1560">
     <Grid Background="#ffdadada">
         <Border MinWidth="750" Margin="15" Background="white" 
-                VerticalAlignment="Center" Padding="30" MaxWidth="1620" CornerRadius="20">
+                VerticalAlignment="Center" Padding="30" MaxWidth="1500" CornerRadius="20">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"/>
             </Border.Effect>
@@ -32,14 +32,21 @@
                         <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="100"/>
                         <DataGridTextColumn Header="Адрес получения" Binding="{Binding PickupAddress}" Width="140"/>
                         <DataGridTextColumn Header="Адрес доставки" Binding="{Binding DeliveryAddress}" Width="140"/>
-                        <DataGridTextColumn Header="Исполнитель" Binding="{Binding Executor}" Width="115"/>
-                        <DataGridTextColumn Header="Ширина" Binding="{Binding Width}" Width="85"/>
+                        <DataGridTextColumn Header="Исполнитель" Binding="{Binding Executor}" Width="105"/>
+                        <!--<DataGridTextColumn Header="Ширина" Binding="{Binding Width}" Width="85"/>
                         <DataGridTextColumn Header="Высота" Binding="{Binding Height}" Width="85"/>
-                        <DataGridTextColumn Header="Глубина" Binding="{Binding Depth}" Width="85"/>
+                        <DataGridTextColumn Header="Глубина" Binding="{Binding Depth}" Width="85"/>-->
                         <DataGridTextColumn Header="Вес" Binding="{Binding Weight}" Width="60"/>
                         <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="120"/>
                         <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedDate}" Width="160"/>
                         <DataGridTextColumn Header="Дата обновления" Binding="{Binding UpdatedDate}" Width="160"/>
+                        <DataGridTemplateColumn Header="Редактировать" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="✏️ Редактировать" Foreground="Black" Width="120" Height="30" Click="EditOrder"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Удалить" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -47,6 +54,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>

@@ -108,14 +108,27 @@ namespace MajorApp
                 (o.Comment?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.CreatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
                 (o.UpdatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
-                (o.Width.ToString().ToLowerInvariant().Contains(searchText)) ||
-                (o.Height.ToString().ToLowerInvariant().Contains(searchText)) ||
-                (o.Depth.ToString().ToLowerInvariant().Contains(searchText)) ||
+                //(o.Width.ToString().ToLowerInvariant().Contains(searchText)) ||
+                //(o.Height.ToString().ToLowerInvariant().Contains(searchText)) ||
+                //(o.Depth.ToString().ToLowerInvariant().Contains(searchText)) ||
                 (o.Weight.ToString().ToLowerInvariant().Contains(searchText))
             ).ToList();
 
             dataGridOrders.ItemsSource = new ObservableCollection<Order>(filteredOrders);  // Преобразуем отфильтрованные заказы в ObservableCollection
         }
+
+        private void EditOrder(object sender, RoutedEventArgs e)
+        {
+            if (dataGridOrders.SelectedItem is Order selectedOrder)
+            {
+                // Создание и отображение окна редактирования с данными выбранной заявки
+                var editWindow = new EditOrderWindow(selectedOrder);
+                editWindow.ShowDialog();
+
+                LoadOrders();
+            }
+        }
+
 
     }
 }
