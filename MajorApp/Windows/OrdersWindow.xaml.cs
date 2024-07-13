@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MajorApp.Models;
@@ -88,35 +87,47 @@ namespace MajorApp
             }
         }
 
-        // Метод для поиска заявок по введенному тексту
+        // Событие, вызываемое при изменении текста в поле поиска
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterOrders();
+        }
+
+        // Событие, вызываемое при изменении выбранной даты в DatePicker
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterOrders();
+        }
+
+        // Метод для поиска заявок по введенному тексту и датам
+        private void FilterOrders()
         {
             string searchText = searchTextBox.Text.ToLowerInvariant();
 
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                dataGridOrders.ItemsSource = _orders;  // Если поле поиска пустое, загружаем все заявки
-                return;
-            }
+            DateTime? startDate = startDatePicker.SelectedDate;
+            DateTime? endDate = endDatePicker.SelectedDate;
 
+            // Фильтруем список заказов
             var filteredOrders = _orders.Where(o =>
+                (string.IsNullOrWhiteSpace(searchText) ||
+                (o.Id.ToString().Contains(searchText)) ||
                 (o.Status?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.Description?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.PickupAddress?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.DeliveryAddress?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.Executor?.ToLowerInvariant().Contains(searchText) == true) ||
                 (o.Comment?.ToLowerInvariant().Contains(searchText) == true) ||
-                (o.CreatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
-                (o.UpdatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||  // Преобразуем DateTime в строку для поиска
-                //(o.Width.ToString().ToLowerInvariant().Contains(searchText)) ||
-                //(o.Height.ToString().ToLowerInvariant().Contains(searchText)) ||
-                //(o.Depth.ToString().ToLowerInvariant().Contains(searchText)) ||
-                (o.Weight.ToString().ToLowerInvariant().Contains(searchText))
+                (o.CreatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||
+                (o.UpdatedDate.ToString("yyyy-MM-dd").ToLowerInvariant().Contains(searchText)) ||
+                (o.Weight.ToString().ToLowerInvariant().Contains(searchText)))
+                && (!startDate.HasValue || o.CreatedDate >= startDate.Value)
+                && (!endDate.HasValue || o.CreatedDate <= endDate.Value)
             ).ToList();
 
-            dataGridOrders.ItemsSource = new ObservableCollection<Order>(filteredOrders);  // Преобразуем отфильтрованные заказы в ObservableCollection
+            dataGridOrders.ItemsSource = new ObservableCollection<Order>(filteredOrders);
         }
 
+        // Метод для обновления заявки
         private void EditOrder(object sender, RoutedEventArgs e)
         {
             if (dataGridOrders.SelectedItem is Order selectedOrder)

@@ -16,10 +16,20 @@
             <DockPanel>
                 <TextBlock Text="Список заявок" FontSize="30" FontWeight="Bold" Margin="0 0 0 20" DockPanel.Dock="Top"/>
 
-                <!-- Кнопка для создания новой заявки -->
+                <!-- Кнопка для создания новой заявки и элементы фильтрации -->
                 <Grid Margin="0 0 0 20" DockPanel.Dock="Top">
-                    <Button HorizontalAlignment="Left" Content="Создать новую заявку" Click="CreateNewOrder"/>
-                    <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="Поиск" HorizontalAlignment="Right" Width="200" VerticalContentAlignment="Center" Margin="0 0 20 0" FontSize="16" TextChanged="SearchTextBox_TextChanged"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="Создать новую заявку" Click="CreateNewOrder" HorizontalAlignment="Left" Margin="0,0,10,0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                        <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="Поиск" Width="200" VerticalContentAlignment="Center" Margin="0,0,10,0" FontSize="16" TextChanged="SearchTextBox_TextChanged"/>
+                        <TextBlock Text="С:" Margin="10 0 8 -8" VerticalAlignment="Center" FontSize="16"/>
+                        <DatePicker x:Name="startDatePicker" SelectedDateChanged="DatePicker_SelectedDateChanged" Width="100" VerticalContentAlignment="Center" Margin="0,0,10,0" FontSize="16" Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
+                        <TextBlock Text="По:"  Margin="10 0 8 -8" VerticalAlignment="Center" FontSize="16"/>
+                        <DatePicker x:Name="endDatePicker" SelectedDateChanged="DatePicker_SelectedDateChanged"  Width="100" VerticalContentAlignment="Center" Margin="0,0,10,0" FontSize="16" Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
+                    </StackPanel>
                 </Grid>
 
                 <!-- DataGrid для отображения заявок -->
@@ -33,9 +43,6 @@
                         <DataGridTextColumn Header="Адрес получения" Binding="{Binding PickupAddress}" Width="140"/>
                         <DataGridTextColumn Header="Адрес доставки" Binding="{Binding DeliveryAddress}" Width="140"/>
                         <DataGridTextColumn Header="Исполнитель" Binding="{Binding Executor}" Width="105"/>
-                        <!--<DataGridTextColumn Header="Ширина" Binding="{Binding Width}" Width="85"/>
-                        <DataGridTextColumn Header="Высота" Binding="{Binding Height}" Width="85"/>
-                        <DataGridTextColumn Header="Глубина" Binding="{Binding Depth}" Width="85"/>-->
                         <DataGridTextColumn Header="Вес" Binding="{Binding Weight}" Width="60"/>
                         <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="120"/>
                         <DataGridTextColumn Header="Дата создания" Binding="{Binding CreatedDate}" Width="160"/>
