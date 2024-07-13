@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MajorApp"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Список заявок" Height="690" Width="1560">
+        Title="Список заявок" Height="690" Width="1560" WindowStartupLocation="CenterScreen">
     <Grid Background="#ffdadada">
         <Border MinWidth="750" Margin="15" Background="white" 
                 VerticalAlignment="Center" Padding="30" MaxWidth="1500" CornerRadius="20">

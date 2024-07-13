@@ -1,18 +1,17 @@
 ﻿using MajorApp.Logging;
 using MajorApp.Models;
 using MajorApp.Utils;
+using MajorApp.Windows;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace MajorApp
 {
-    /// <summary>
-    /// Interaction logic for EditOrderWindow.xaml
-    /// </summary>
     public partial class EditOrderWindow : Window
     {
         private static readonly HttpClient client = new HttpClient();
@@ -54,6 +53,7 @@ namespace MajorApp
         {
             bool isEditable = _order.Status == "Новая";
 
+            // Поля редактируются только если статус "Новая"
             textBoxDescription.IsEnabled = isEditable;
             textBoxPickupAddress.IsEnabled = isEditable;
             textBoxDeliveryAddress.IsEnabled = isEditable;
@@ -63,6 +63,7 @@ namespace MajorApp
             textBoxDepth.IsEnabled = isEditable;
             textBoxWeight.IsEnabled = isEditable;
 
+            // Изменение цвета фона в зависимости от возможности редактирования
             var readOnlyColor = new SolidColorBrush(Color.FromRgb(211, 211, 211)); // Light Gray
             var editableColor = new SolidColorBrush(Colors.White);
 
@@ -79,9 +80,9 @@ namespace MajorApp
             textBoxComment.IsEnabled = true;
             textBoxComment.Background = editableColor;
         }
+
         private async void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
-
             // Валидация полей и проверка данных
             if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, textBoxExecutor,
                                                       textBoxWidth, textBoxHeight, textBoxDepth, textBoxWeight, null, out string errorMessage))
@@ -91,21 +92,7 @@ namespace MajorApp
             }
 
             // Обновление данных заказа с помощью API
-            _order.Description = textBoxDescription.Text;
-            _order.PickupAddress = textBoxPickupAddress.Text;
-            _order.DeliveryAddress = textBoxDeliveryAddress.Text;
-            _order.Comment = textBoxComment.Text;
-            _order.Executor = textBoxExecutor.Text;
-            _order.Width = double.TryParse(textBoxWidth.Text, out var width) ? width : _order.Width;
-            _order.Height = double.TryParse(textBoxHeight.Text, out var height) ? height : _order.Height;
-            _order.Depth = double.TryParse(textBoxDepth.Text, out var depth) ? depth : _order.Depth;
-            _order.Weight = double.TryParse(textBoxWeight.Text, out var weight) ? weight : _order.Weight;
-
-            // Обновление статуса заявки
-            if (comboBoxStatus.SelectedItem is ComboBoxItem selectedStatus)
-            {
-                _order.Status = selectedStatus.Content.ToString();
-            }
+            UpdateOrderFromFields(updateComment: true);
 
             try
             {
@@ -129,15 +116,106 @@ namespace MajorApp
             }
         }
 
-        private void ComboBoxStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ComboBoxStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Не позволяем менять статус обратно на "Новая", если он уже изменен
-            if (_order.Status != "Новая" && ((ComboBoxItem)comboBoxStatus.SelectedItem).Content.ToString() == "Новая")
+            // Если событие вызвано изменением выбора статуса
+            if (comboBoxStatus.SelectedItem is ComboBoxItem selectedStatus)
             {
-                comboBoxStatus.SelectedItem = comboBoxStatus.Items
-                    .Cast<ComboBoxItem>()
-                    .FirstOrDefault(item => item.Content.ToString() == _order.Status);
-                MessageBox.Show("Статус заявки нельзя вернуть на 'Новая'");
+                // Считываем новый статус из выбранного элемента
+                string newStatus = selectedStatus.Content.ToString();
+
+                // Не позволяем менять статус обратно на "Новая", если он уже изменен
+                if (_order.Status != "Новая" && newStatus == "Новая")
+                {
+                    comboBoxStatus.SelectedItem = comboBoxStatus.Items
+                        .Cast<ComboBoxItem>()
+                        .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+                    MessageBox.Show("Статус заявки нельзя вернуть на 'Новая'");
+                    return;
+                }
+
+                // Обработка смены статуса на "Отменена"
+                if (_order.Status != "Отменена" && newStatus == "Отменена")
+                {
+                    var commentWindow = new CommentInputWindow();
+                    if (commentWindow.ShowDialog() == true)
+                    {
+                        // Проверяем, не является ли комментарий пустым
+                        if (string.IsNullOrWhiteSpace(commentWindow.Comment))
+                        {
+                            MessageBox.Show("Комментарий не может быть пустым", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            // Возвращаем статус к предыдущему значению, если комментарий пустой
+                            comboBoxStatus.SelectedItem = comboBoxStatus.Items
+                                .Cast<ComboBoxItem>()
+                                .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+                            return;
+                        }
+
+                        _order.Comment = commentWindow.Comment;
+                        _order.Status = newStatus;
+
+                        // Обновляем заказ и сохраняем изменения
+                        UpdateOrderFromFields(updateComment: false);
+                        await SaveOrderAsync();
+                    }
+                    else
+                    {
+                        // Возвращаем статус к предыдущему значению, если окно комментария не подтверждено
+                        comboBoxStatus.SelectedItem = comboBoxStatus.Items
+                            .Cast<ComboBoxItem>()
+                            .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+                    }
+                }
+                else if (_order.Status != newStatus)
+                {
+                    // Обновляем только статус заказа, если статус изменился на что-то другое
+                    _order.Status = newStatus;
+
+                    // Обновляем заказ и сохраняем изменения
+                    UpdateOrderFromFields(updateComment: true);
+                    await SaveOrderAsync();
+                }
+            }
+        }
+
+
+
+        private void UpdateOrderFromFields(bool updateComment)
+        {
+            _order.Description = textBoxDescription.Text;
+            _order.PickupAddress = textBoxPickupAddress.Text;
+            _order.DeliveryAddress = textBoxDeliveryAddress.Text;
+            // Обновляем комментарий только если переводим заявку в статус Отменена
+            if (updateComment)
+            {
+                _order.Comment = textBoxComment.Text;
+            }
+            _order.Executor = textBoxExecutor.Text;
+            _order.Width = double.TryParse(textBoxWidth.Text, out var width) ? width : _order.Width;
+            _order.Height = double.TryParse(textBoxHeight.Text, out var height) ? height : _order.Height;
+            _order.Depth = double.TryParse(textBoxDepth.Text, out var depth) ? depth : _order.Depth;
+            _order.Weight = double.TryParse(textBoxWeight.Text, out var weight) ? weight : _order.Weight;
+
+            if (comboBoxStatus.SelectedItem is ComboBoxItem selectedStatus)
+            {
+                _order.Status = selectedStatus.Content.ToString();
+            }
+        }
+
+        private async Task SaveOrderAsync()
+        {
+            var json = JsonSerializer.Serialize(_order);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var response = await client.PutAsync($"https://localhost:5001/api/orders/{_order.Id}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Заявка отменена успешно.");
+                Close();
+            }
+            else
+            {
+                MessageBox.Show($"Ошибка при отмене заявки. Код состояния: {response.StatusCode}");
             }
         }
 

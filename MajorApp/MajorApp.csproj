@@ -115,6 +115,9 @@
     <Compile Include="Logging\StatusChangeLogger.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Utils\ValidationUtils.cs" />
+    <Compile Include="Windows\CommentInputWindow.xaml.cs">
+      <DependentUpon>CommentInputWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\EditOrderWindow.xaml.cs">
       <DependentUpon>EditOrderWindow.xaml</DependentUpon>
     </Compile>
@@ -133,6 +136,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\CommentInputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\EditOrderWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
