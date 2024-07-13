@@ -39,16 +39,16 @@
                 <TextBox x:Name="textBoxExecutor" materialDesign:HintAssist.Hint="Исполнитель" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
 
                 <!-- Ширина -->
-                <TextBox x:Name="textBoxWidth" materialDesign:HintAssist.Hint="Ширина (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <TextBox x:Name="textBoxWidth" materialDesign:HintAssist.Hint="Ширина (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="NumericOnly_PreviewTextInput"/>
 
                 <!-- Высота -->
-                <TextBox x:Name="textBoxHeight" materialDesign:HintAssist.Hint="Высота (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <TextBox x:Name="textBoxHeight" materialDesign:HintAssist.Hint="Высота (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="NumericOnly_PreviewTextInput"/>
 
                 <!-- Глубина -->
-                <TextBox x:Name="textBoxDepth" materialDesign:HintAssist.Hint="Глубина (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <TextBox x:Name="textBoxDepth" materialDesign:HintAssist.Hint="Глубина (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="NumericOnly_PreviewTextInput"/>
 
                 <!-- Вес -->
-                <TextBox x:Name="textBoxWeight" materialDesign:HintAssist.Hint="Вес (кг)" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <TextBox x:Name="textBoxWeight" materialDesign:HintAssist.Hint="Вес (кг)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="NumericOnly_PreviewTextInput"/>
 
                 <!-- Кнопка для создания заявки -->
                 <Button Content="Сохранить изменения" Margin="0 20" Click="SaveChanges_Click"/>

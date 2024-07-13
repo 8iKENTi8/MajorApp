@@ -114,6 +114,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\StatusChangeLogger.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Utils\ValidationUtils.cs" />
     <Compile Include="Windows\EditOrderWindow.xaml.cs">
       <DependentUpon>EditOrderWindow.xaml</DependentUpon>
     </Compile>

@@ -1,5 +1,6 @@
 ﻿using MajorApp.Logging;
 using MajorApp.Models;
+using MajorApp.Utils;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -80,6 +81,15 @@ namespace MajorApp
         }
         private async void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
+
+            // Валидация полей и проверка данных
+            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, textBoxExecutor,
+                                                      textBoxWidth, textBoxHeight, textBoxDepth, textBoxWeight, null, out string errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             // Обновление данных заказа с помощью API
             _order.Description = textBoxDescription.Text;
             _order.PickupAddress = textBoxPickupAddress.Text;
@@ -131,6 +141,16 @@ namespace MajorApp
             }
         }
 
+        // Метод для предотвращения ввода нечисловых символов в текстовые поля для числовых данных
+        private void NumericOnly_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
 
+        // Метод для проверки, может ли текст быть преобразован в число типа double
+        private bool IsTextAllowed(string text)
+        {
+            return double.TryParse(text, out _);
+        }
     }
 }

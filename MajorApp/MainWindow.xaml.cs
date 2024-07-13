@@ -5,113 +5,90 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using MajorApp.Models;
+using MajorApp.Utils;
 
 namespace MajorApp
 {
     public partial class MainWindow : Window
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient();  // Статический HttpClient для выполнения HTTP запросов
 
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();  // Инициализация компонентов окна
         }
 
+        // Метод для создания новой заявки
         private async void CreateOrder(object sender, RoutedEventArgs e)
         {
-            // Проверка обязательных полей и корректности данных
-            if (!IsValidInput())
+            // Проверка валидности данных из текстовых полей и других элементов управления
+            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, textBoxExecutor,
+                                                      textBoxWidth, textBoxHeight, textBoxDepth, textBoxWeight, datePickerCreatedDate, out string errorMessage))
             {
-                MessageBox.Show("Пожалуйста, проверьте все поля на корректность. Все поля должны быть заполнены и иметь корректные значения.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
+            // Создаем объект заказа на основе введенных данных
             var order = new Order
             {
-                Description = textBoxDescription.Text,
-                PickupAddress = textBoxPickupAddress.Text,
-                DeliveryAddress = textBoxDeliveryAddress.Text,
-                Comment = textBoxComment.Text,
-                CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),
-                UpdatedDate = DateTime.Now,
-                Executor = textBoxExecutor.Text,
-                Width = double.Parse(textBoxWidth.Text),
-                Height = double.Parse(textBoxHeight.Text),
-                Depth = double.Parse(textBoxDepth.Text),
-                Weight = double.Parse(textBoxWeight.Text)
+                Description = textBoxDescription.Text,  
+                PickupAddress = textBoxPickupAddress.Text,  
+                DeliveryAddress = textBoxDeliveryAddress.Text,  
+                Comment = textBoxComment.Text,  
+                CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),  
+                UpdatedDate = DateTime.Now,  
+                Executor = textBoxExecutor.Text,  
+                Width = double.Parse(textBoxWidth.Text),  
+                Height = double.Parse(textBoxHeight.Text),  
+                Depth = double.Parse(textBoxDepth.Text),  
+                Weight = double.Parse(textBoxWeight.Text)  
             };
 
+            // Преобразуем объект заказа в JSON формат для отправки на сервер
             var json = JsonSerializer.Serialize(order);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             try
             {
+                // Отправляем POST запрос на сервер для создания новой заявки
                 var response = await client.PostAsync("https://localhost:5001/api/orders", content);
 
+                // Проверяем успешность запроса и отображаем соответствующее сообщение
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Order created successfully.");
+                    MessageBox.Show("Заявка успешно создана.");
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to create order. Status Code: {response.StatusCode}");
+                    MessageBox.Show($"Не удалось создать заявку. Код статуса: {response.StatusCode}");
                 }
             }
             catch (HttpRequestException ex)
             {
-                MessageBox.Show($"Request error: {ex.Message}");
+                // Обработка ошибок HTTP запросов и отображение сообщения об ошибке
+                MessageBox.Show($"Ошибка запроса: {ex.Message}");
             }
         }
 
-        private bool IsValidInput()
-        {
-            // Проверка даты создания
-            if (datePickerCreatedDate.SelectedDate == null)
-            {
-                MessageBox.Show("Дата создания должна быть выбрана.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
-            // Проверка обязательных текстовых полей
-            if (string.IsNullOrWhiteSpace(textBoxDescription.Text) ||
-                string.IsNullOrWhiteSpace(textBoxPickupAddress.Text) ||
-                string.IsNullOrWhiteSpace(textBoxDeliveryAddress.Text) ||
-                string.IsNullOrWhiteSpace(textBoxExecutor.Text))
-            {
-                MessageBox.Show("Описание, адрес получения, адрес доставки и исполнитель должны быть заполнены.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
-            // Проверка числовых полей
-            if (!double.TryParse(textBoxWidth.Text, out double width) || width <= 0 ||
-                !double.TryParse(textBoxHeight.Text, out double height) || height <= 0 ||
-                !double.TryParse(textBoxDepth.Text, out double depth) || depth <= 0 ||
-                !double.TryParse(textBoxWeight.Text, out double weight) || weight <= 0)
-            {
-                MessageBox.Show("Ширина, высота, глубина и вес должны быть положительными числами.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-
-            return true;
-        }
-
+        // Метод для предотвращения ввода нечисловых символов в текстовые поля для числовых данных
         private void NumericOnly_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            // Метод для проверки ввода числовых данных
             e.Handled = !IsTextAllowed(e.Text);
         }
 
+        // Метод для проверки, может ли текст быть преобразован в число типа double
         private bool IsTextAllowed(string text)
         {
-            // Метод для проверки корректности текста
-            return double.TryParse(text, out _);
+            return double.TryParse(text, out _); 
         }
 
+        // Метод для открытия окна с просмотром заявок 
         private void OpenOrdersWindow(object sender, RoutedEventArgs e)
         {
             OrdersWindow ordersWindow = new OrdersWindow();
             ordersWindow.Show();
-            Hide();
+            Hide();  
         }
     }
 }
