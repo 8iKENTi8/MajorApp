@@ -4,7 +4,7 @@ namespace MajorApp.Utils
 {
     public static class ValidationUtils
     {
-        public static bool ValidateOrderDetails(TextBox descriptionTextBox, TextBox pickupAddressTextBox, TextBox deliveryAddressTextBox, TextBox executorTextBox,
+        public static bool ValidateOrderDetails(TextBox descriptionTextBox, TextBox pickupAddressTextBox, TextBox deliveryAddressTextBox, ComboBox executorComboBox,
                                                 TextBox widthTextBox, TextBox heightTextBox, TextBox depthTextBox, TextBox weightTextBox,
                                                 DatePicker createdDatePicker, out string errorMessage)
         {
@@ -19,7 +19,7 @@ namespace MajorApp.Utils
             if (string.IsNullOrWhiteSpace(descriptionTextBox.Text) ||
                 string.IsNullOrWhiteSpace(pickupAddressTextBox.Text) ||
                 string.IsNullOrWhiteSpace(deliveryAddressTextBox.Text) ||
-                string.IsNullOrWhiteSpace(executorTextBox.Text))
+                executorComboBox.SelectedItem == null)  // Проверка на выбранного исполнителя
             {
                 errorMessage = "Описание, адрес получения, адрес доставки и исполнитель должны быть заполнены.";
                 return false;

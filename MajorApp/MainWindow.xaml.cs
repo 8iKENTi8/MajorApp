@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -16,13 +17,29 @@ namespace MajorApp
         public MainWindow()
         {
             InitializeComponent();  // Инициализация компонентов окна
+            LoadExecutors();  // Загрузка данных исполнителей в AutoCompleteBox
+        }
+
+        // Метод для получения исполнителей
+        private async void LoadExecutors()
+        {
+            try
+            {
+                var executors = await ExecutorUtils.GetExecutorsAsync();
+                comboBoxExecutor.ItemsSource = executors;
+                comboBoxExecutor.DisplayMemberPath = "Name";
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show($"Не удалось загрузить исполнителей: {ex.Message}");
+            }
         }
 
         // Метод для создания новой заявки
         private async void CreateOrder(object sender, RoutedEventArgs e)
         {
             // Проверка валидности данных из текстовых полей и других элементов управления
-            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, textBoxExecutor,
+            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, comboBoxExecutor,
                                                       textBoxWidth, textBoxHeight, textBoxDepth, textBoxWeight, datePickerCreatedDate, out string errorMessage))
             {
                 MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -37,8 +54,8 @@ namespace MajorApp
                 DeliveryAddress = textBoxDeliveryAddress.Text,  
                 Comment = textBoxComment.Text,  
                 CreatedDate = datePickerCreatedDate.SelectedDate.GetValueOrDefault(),  
-                UpdatedDate = DateTime.Now,  
-                Executor = textBoxExecutor.Text,  
+                UpdatedDate = DateTime.Now,
+                Executor = (comboBoxExecutor.SelectedItem as Executor)?.Name,
                 Width = double.Parse(textBoxWidth.Text),  
                 Height = double.Parse(textBoxHeight.Text),  
                 Depth = double.Parse(textBoxDepth.Text),  

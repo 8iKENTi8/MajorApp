@@ -25,6 +25,22 @@ namespace MajorApp
             _statusChangeLogger = new StatusChangeLogger("status_change.log");
             _order.AttachLogger(_statusChangeLogger);
             LoadOrderDetails();
+            LoadExecutors(); // Загрузка исполнителей
+        }
+
+        private async void LoadExecutors()
+        {
+            try
+            {
+                var executors = await ExecutorUtils.GetExecutorsAsync();
+                comboBoxExecutor.ItemsSource = executors;
+                comboBoxExecutor.DisplayMemberPath = "Name";
+                comboBoxExecutor.SelectedItem = executors.FirstOrDefault(e => e.Name == _order.Executor);
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show($"Не удалось загрузить исполнителей: {ex.Message}");
+            }
         }
 
         private void LoadOrderDetails()
@@ -34,7 +50,6 @@ namespace MajorApp
             textBoxPickupAddress.Text = _order.PickupAddress;
             textBoxDeliveryAddress.Text = _order.DeliveryAddress;
             textBoxComment.Text = _order.Comment;
-            textBoxExecutor.Text = _order.Executor;
             textBoxWidth.Text = _order.Width.ToString();
             textBoxHeight.Text = _order.Height.ToString();
             textBoxDepth.Text = _order.Depth.ToString();
@@ -44,6 +59,11 @@ namespace MajorApp
             comboBoxStatus.SelectedItem = comboBoxStatus.Items
                 .Cast<ComboBoxItem>()
                 .FirstOrDefault(item => item.Content.ToString() == _order.Status);
+
+            // Устанавливаем ComboBoxExecutor значение по умолчанию
+            comboBoxExecutor.SelectedItem = comboBoxExecutor.Items
+                .Cast<ComboBoxItem>()
+                .FirstOrDefault(item => item.Content.ToString() == _order.Executor);
 
             // Установка состояния полей
             SetFieldsState();
@@ -57,7 +77,7 @@ namespace MajorApp
             textBoxDescription.IsEnabled = isEditable;
             textBoxPickupAddress.IsEnabled = isEditable;
             textBoxDeliveryAddress.IsEnabled = isEditable;
-            textBoxExecutor.IsEnabled = isEditable;
+            comboBoxExecutor.IsEnabled = isEditable;
             textBoxWidth.IsEnabled = isEditable;
             textBoxHeight.IsEnabled = isEditable;
             textBoxDepth.IsEnabled = isEditable;
@@ -70,7 +90,7 @@ namespace MajorApp
             textBoxDescription.Background = isEditable ? editableColor : readOnlyColor;
             textBoxPickupAddress.Background = isEditable ? editableColor : readOnlyColor;
             textBoxDeliveryAddress.Background = isEditable ? editableColor : readOnlyColor;
-            textBoxExecutor.Background = isEditable ? editableColor : readOnlyColor;
+            comboBoxExecutor.Background = isEditable ? editableColor : readOnlyColor;
             textBoxWidth.Background = isEditable ? editableColor : readOnlyColor;
             textBoxHeight.Background = isEditable ? editableColor : readOnlyColor;
             textBoxDepth.Background = isEditable ? editableColor : readOnlyColor;
@@ -84,7 +104,7 @@ namespace MajorApp
         private async void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
             // Валидация полей и проверка данных
-            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, textBoxExecutor,
+            if (!ValidationUtils.ValidateOrderDetails(textBoxDescription, textBoxPickupAddress, textBoxDeliveryAddress, comboBoxExecutor,
                                                       textBoxWidth, textBoxHeight, textBoxDepth, textBoxWeight, null, out string errorMessage))
             {
                 MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -190,7 +210,7 @@ namespace MajorApp
             {
                 _order.Comment = textBoxComment.Text;
             }
-            _order.Executor = textBoxExecutor.Text;
+            _order.Executor = (comboBoxExecutor.SelectedItem as Executor)?.Name;
             _order.Width = double.TryParse(textBoxWidth.Text, out var width) ? width : _order.Width;
             _order.Height = double.TryParse(textBoxHeight.Text, out var height) ? height : _order.Height;
             _order.Depth = double.TryParse(textBoxDepth.Text, out var depth) ? depth : _order.Depth;

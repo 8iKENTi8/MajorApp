@@ -113,7 +113,9 @@
     </ApplicationDefinition>
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\StatusChangeLogger.cs" />
+    <Compile Include="Models\Executor.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Utils\ExecutorUtils.cs" />
     <Compile Include="Utils\ValidationUtils.cs" />
     <Compile Include="Windows\CommentInputWindow.xaml.cs">
       <DependentUpon>CommentInputWindow.xaml</DependentUpon>

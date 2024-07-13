@@ -36,7 +36,14 @@
                 <TextBox x:Name="textBoxComment" materialDesign:HintAssist.Hint="Комментарий" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
 
                 <!-- Исполнитель -->
-                <TextBox x:Name="textBoxExecutor" materialDesign:HintAssist.Hint="Исполнитель" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <ComboBox x:Name="comboBoxExecutor"
+                          materialDesign:HintAssist.Hint="Исполнитель"
+                          IsEditable="True"
+                          IsReadOnly="False"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="Id"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          IsTextSearchEnabled="True"/>
 
                 <!-- Ширина -->
                 <TextBox x:Name="textBoxWidth" materialDesign:HintAssist.Hint="Ширина (см)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" PreviewTextInput="NumericOnly_PreviewTextInput" />
